@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMX Period Fixtures — 2025/2026</title>
+<style>
+  :root{
+    --bg:#f4f6f9; --card:#ffffff; --ink:#1a2433; --muted:#6b7686; --line:#e2e7ee;
+    --pac:#7cc4dd; --wide:#f5d442; --pg:#f5a86e; --other:#8fbf6f;
+    --dwm:#c92a2a; --accent:#1f4e79;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font:14px/1.45 "Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--ink);padding:18px}
+  header{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;margin-bottom:14px}
+  h1{font-size:21px;color:var(--accent)}
+  header .sub{color:var(--muted);font-size:13px}
+  .stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 14px;min-width:110px}
+  .stat b{display:block;font-size:20px}
+  .stat span{font-size:12px;color:var(--muted)}
+  .stat .dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;border:1px solid #c9d2dd}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .controls input,.controls select{padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);font-size:13px;color:var(--ink)}
+  .controls input[type=text]{width:250px}
+  .controls label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:5px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer}
+  .tabs{display:flex;gap:6px;margin-left:auto}
+  .tabs button,.tabs a{padding:7px 16px;border:1px solid var(--line);background:var(--card);border-radius:6px;cursor:pointer;font-size:13px;color:var(--ink);text-decoration:none}
+  .tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .theme-btn{margin-left:auto;width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;background:#f6a821;color:#fff;font-size:15px;line-height:34px;box-shadow:0 1px 3px rgba(0,0,0,.25);flex:0 0 auto}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto}
+  /* ---------- table ---------- */
+  table{border-collapse:collapse;width:100%;min-width:1400px}
+  th,td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+  th{background:#eef2f7;cursor:pointer;user-select:none;font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:#3b4a5e;position:sticky;top:0}
+  th .arr{font-size:10px;color:var(--accent)}
+  tr:hover td{background:#f6f9fc}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .vname{font-weight:600}
+  .pill{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:600;color:#243042}
+  .pill.pac{background:var(--pac)} .pill.wide{background:var(--wide)}
+  .pill.pg{background:var(--pg)} .pill.other{background:var(--other)}
+  .rate{font-weight:600}
+  td .small{font-size:11px;color:var(--muted);white-space:normal;max-width:260px;display:block}
+  .estflag{color:#b07a1e;font-weight:600;font-size:11px}
+  .dneg{color:var(--dwm);font-weight:700}
+  .dpos{color:#1d7a3d;font-weight:600}
+  /* ---------- timeline ---------- */
+  .tl{min-width:1500px}
+  .tl-head{display:grid;grid-template-columns:215px 1fr;font-size:11px;color:var(--muted)}
+  .tl-years{display:grid;grid-template-columns:repeat(5,1fr);border-left:1px solid var(--line)}
+  .tl-years div{border-right:1px solid var(--line);text-align:center;padding:3px 0;background:#dde6f0;font-weight:700;color:var(--accent);font-size:12px}
+  .tl-months{display:grid;grid-template-columns:repeat(60,1fr);border-left:1px solid var(--line)}
+  .tl-months div{border-right:1px solid var(--line);text-align:center;padding:2px 0;overflow:hidden;background:#eef2f7;font-weight:600;color:#3b4a5e;font-size:9px}
+  .tl-months div.jan{border-left:2px solid #9fb0c4}
+  .tl-corner{display:flex;align-items:flex-end;justify-content:flex-end;padding:2px 10px;font-size:11px;font-weight:700;letter-spacing:.06em;color:#3b4a5e}
+  .tl-row{display:grid;grid-template-columns:215px 1fr;align-items:center;border-bottom:1px solid var(--line)}
+  .tl-row:hover{background:#f6f9fc}
+  .tl-label{font-size:12px;font-weight:600;padding:5px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tl-label small{display:block;font-weight:400;color:var(--muted)}
+  .tl-track{position:relative;height:30px;border-left:1px solid var(--line);background:
+    repeating-linear-gradient(90deg,transparent 0,transparent calc(100%/60 - 1px),var(--line) calc(100%/60 - 1px),var(--line) calc(100%/60))}
+  .bar{position:absolute;top:6px;height:18px;border-radius:9px;font-size:10px;line-height:18px;color:#243042;overflow:hidden;white-space:nowrap;padding:0 7px;box-shadow:0 1px 2px rgba(26,36,51,.18)}
+  .bar.win{background:repeating-linear-gradient(45deg,#b3bdca 0 5px,#d9e0e9 5px 10px);color:#3b4a5e}
+  .bar.est{opacity:.72;border:1.5px dashed #8190a5}
+  .today{position:absolute;top:0;bottom:0;width:2px;background:var(--dwm);z-index:4}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12px;color:var(--muted)}
+  .legend i{display:inline-block;width:14px;height:11px;border-radius:2px;margin-right:4px;vertical-align:middle;border:1px solid rgba(0,0,0,.15)}
+  footer{margin-top:12px;font-size:11px;color:var(--muted)}
+  footer a{color:var(--accent)}
+  /* ---------- dark mode ---------- */
+  html[data-theme=dark]{--bg:#0e1520;--card:#161f2c;--ink:#e4eaf3;--muted:#94a4b9;--line:#273245;--accent:#7fb6e8}
+  html[data-theme=dark] th, html[data-theme=dark] .tl-months div{background:#1d2939;color:#aebdd1}
+  html[data-theme=dark] .tl-years div{background:#223048}
+  html[data-theme=dark] tr:hover td, html[data-theme=dark] .tl-row:hover{background:#1b2636}
+  html[data-theme=dark] .bar.win{background:repeating-linear-gradient(45deg,#42526b 0 5px,#2e3a4f 5px 10px);color:#c6d2e2}
+  html[data-theme=dark] .tl-corner{color:#aebdd1}
+  html[data-theme=dark] .theme-btn{background:#2e3a52;color:#ffd76e}
+  html[data-theme=dark] .legend i{border-color:rgba(255,255,255,.2)}
+  html[data-theme=dark] .tabs button,html[data-theme=dark] .tabs a{background:#243349;border-color:#3c4d68;color:#e4eaf3}
+  html[data-theme=dark] .tabs button.on{background:#7fb6e8;border-color:#7fb6e8;color:#0e1520;font-weight:600}
+  html[data-theme=dark] .controls input,html[data-theme=dark] .controls select,html[data-theme=dark] .controls label{background:#1b2738;border-color:#3c4d68}
+  html[data-theme=dark] .estflag{color:#e8b75a}
+  html[data-theme=dark] .dpos{color:#6fcf8f}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>PMX PERIOD FIXTURES</h1>
+  <span class="sub">April 2025 → today · 45 fixtures · report dated 10 June 2026 · dwt/built from VesselFinder</span>
+  <button id="themeBtn" class="theme-btn" title="Day / night mode">☀</button>
+</header>
+
+<div class="stats" id="stats"></div>
+
+<div class="controls">
+  <input type="text" id="q" placeholder="Search vessel / owner / charterer / broker…">
+  <select id="fArea">
+    <option value="">All redelivery areas</option>
+    <option value="pac">Pacific (pmo–spore/jpn)</option>
+    <option value="wide">Wide / Atlantic options</option>
+    <option value="pg">PG</option>
+    <option value="other">Other</option>
+  </select>
+  <label><input type="checkbox" id="fOpen"> redelivery window open now</label>
+  <label><input type="checkbox" id="fEst" checked> include estimated rows</label>
+  <div class="tabs">
+    <button id="tabTl" class="on">Timeline</button>
+    <button id="tabTb">Table</button>
+    <a href="period-analytics.html">Analytics</a>
+  </div>
+</div>
+
+<div class="card" id="viewTl"></div>
+<div class="card" id="viewTb" style="display:none"></div>
+
+<div class="legend">
+  <span><i style="background:var(--pac)"></i>Pacific redelivery (min period)</span>
+  <span><i style="background:var(--wide)"></i>Wide / Atlantic options</span>
+  <span><i style="background:var(--pg)"></i>PG</span>
+  <span><i style="background:var(--other)"></i>Other</span>
+  <span><i style="background:repeating-linear-gradient(45deg,#b3bdca 0 5px,#d9e0e9 5px 10px)"></i>Redelivery window (min → max)</span>
+  <span><i style="border:1.5px dashed #8190a5;background:transparent"></i>Estimated (computed from CP + period)</span>
+  <span><i style="background:var(--dwm)"></i>Today (10 Jun 2026)</span>
+</div>
+
+<footer>Source: PERIOD FIXTURES report (10 June 2026). DWT/built looked up on VesselFinder (DA TANG 712 estimated from sister DA TANG 711; APJ PRIYA matched to APJ PRIYA 2). Rows without reported delivery/redelivery are estimated from CP date + period and marked <span class="estflag">est.</span> · See also the <a href="https://giancarlosacchi.github.io/fleet-employment/">Diana fleet employment site</a>.</footer>
+
+<script>
+document.documentElement.dataset.theme=localStorage.getItem('fleet-theme')||'light';
+// v=vessel ow=owner ch=charterer hire=display hn=numeric (balance rate) ob/cb=own/chrtr broker
+// cp=CP date dely=actual delivery from=from date p1/p2=period months (p1a/p2a = "abt")
+// r1/r2=est redelivery min/max (as printed) area + g=area group  d=dwt b=built  note
+const F=[
+{v:"ORIENT POINT",ow:"Al Kamsar",ch:"REFINED SUCCESS",hire:"$ 15,000",hn:15000,ob:"VCM",cb:"NHE",cp:"2025-04-02",dely:"2025-04-24",from:"2025-04-24",p1:12,p1a:1,p2:14,p2a:1,area:"pmo/jpn range",g:"pac",r1:"2026-04-09",r2:"2026-06-24",d:82011,b:2025},
+{v:"ISMENE",ow:"Steamship (Diana)",ch:"CRC",hire:"$ 11,000",hn:11000,ob:"DKO",cb:"DKO",cp:"2025-04-15",dely:"2025-04-24",from:"2025-04-24",p1:10.8,p1a:1,p2:12.8,p2a:1,area:"spore/jpn or skaw/passero or pmo/jpn or boston/bb",g:"wide",r1:"2026-03-20",r2:"2026-05-20",d:77910,b:2013},
+{v:"MSXT BELLONA",ow:"MSG 17",ch:"CLASSIC",hire:"$ 12,380",hn:12380,ob:"CWA",cb:"NSK",cp:"2025-05-07",dely:"2025-05-25",from:"2025-05-25",p1:10,p2:12,p2a:1,area:"pmo/jpn range",g:"pac",r1:"2026-03-25",r2:"2026-06-09",d:82169,b:2012},
+{v:"RUBINA",ow:"Piavia c/o Atlantic Lloyd",ch:"REFINED SUCCESS",hire:"$ 14,200",hn:14200,ob:"VCM",cb:"NHE",cp:"2025-05-14",dely:"2025-05-23",from:"2025-05-23",p1:19,p1a:1,p2:21,p2a:1,area:"spore/jpn range",g:"pac",r1:"2026-12-08",r2:"2027-03-10",d:82384,b:2022},
+{v:"GRAND STAR",ow:"Xin Lu Yang Marine",ch:"UNIWIN",hire:"$ 10,000",hn:10000,ob:"JLI",cb:"JLI",cp:"2025-06-06",dely:"2025-06-25",from:"2025-06-05",p1:11,p1a:1,p2:13,p2a:1,area:"pmo-jpn / skaw-med / boston-bahia blanca",g:"wide",r1:"2026-04-20",r2:"2026-07-20",d:81602,b:2013},
+{v:"TOWER POINT",ow:"Al Kamsar",ch:"REFINED SUCCESS",hire:"$ 13,000",hn:13000,ob:"VCM",cb:"NHE",cp:"2025-06-03",dely:"2025-06-05",from:"2025-06-27",p1:12,p1a:1,p2:14,p2a:1,area:"pmo/jpn range",g:"pac",r1:"2026-06-12",r2:"2026-09-11",d:82050,b:2025},
+{v:"ALANI",ow:"Zhen Fu Shipping",ch:"MIZZEN",hire:"$ 10,000",hn:10000,ob:"LCN",cb:"JLI",cp:"2025-06-24",dely:"2025-06-27",from:"2025-06-27",p1:11,p1a:1,p2:13,p2a:1,area:"spore/jpn range",g:"pac",r1:"2026-05-12",r2:"2026-08-11",d:75772,b:2004},
+{v:"LUCKY LOONG",ow:"Ji Rui Hai",ch:"MIZZEN",hire:"94% (index)",hn:null,ob:"LCN",cb:"JLI",cp:"2025-06-26",dely:"2025-07-12",from:"2025-07-12",p1:11,p1a:1,p2:13,p2a:1,area:"spore/jpn range",g:"pac",r1:"2026-05-28",r2:"2026-08-27",d:76469,b:2005},
+{v:"MUSIGNY",ow:"Classic",ch:"PIONEER",hire:"$ 15,750",hn:15750,ob:"NHE+ASC",cb:"NSK",cp:"2025-08-25",dely:"2026-01-06",from:"2026-01-06",p1:11,p1a:1,p2:13,p2a:1,area:"pmo/jpn range",g:"pac",r1:"2026-11-21",r2:"2027-02-21",d:82133,b:2026},
+{v:"AGIA YPOMONI",ow:"Samios",ch:"ELEMENT",hire:"$ 13,850",hn:13850,ob:"API",cb:"MPE",cp:"2025-01-17",dely:"2025-11-05",from:"2025-11-05",p1:5,p2:8,area:"skaw/passero, boston/galveston, recife/buenos aires, pmo/jpn",g:"wide",r1:"2026-03-21",r2:"2026-07-20",d:75700,b:2012,note:"agreed extension"},
+{v:"GRAECIA AETERNA",ow:"Angelakos",ch:"LDC",hire:"$ 15,000",hn:15000,ob:"DKO",cb:"ASC",cp:"2025-02-17",dely:"2026-04-07",from:"2026-04-07",p1:7,p2:9,area:"spore/jpn or skaw/gib or pmo/india",g:"wide",r1:"2026-10-23",r2:"2027-01-22",d:81001,b:2014,note:"DC dated 16 Oct 2025"},
+{v:"SAKIZAYA ELEGANCE",ow:"Wisdom",ch:"MERCURIA",hire:"106% (index)",hn:null,ob:"NPA",cb:"ASC",cp:"2025-10-03",dely:"2025-11-08",from:"2025-11-08",p1:11,p2:null,area:"pmo/jpn range",g:"pac",r1:"2026-10-08",r2:null,d:81938,b:2015},
+{v:"MU XI",ow:"PPT",ch:"UNIWIN",hire:"$ 11,500",hn:11500,ob:"JLI",cb:"LY",cp:"2025-10-15",dely:"2025-12-20",from:"2025-12-20",p1:6,p2:9,area:"pmo/jpn range",g:"pac",r1:"2026-06-20",r2:"2026-09-20",d:73288,b:2000},
+{v:"MAERA",ow:"Diana",ch:"CRC",hire:"$ 11,750",hn:11750,ob:"DKO",cb:"DKO",cp:"2025-10-21",dely:"2025-11-03",from:"2025-11-03",p1:10,p2:12,p2a:1,area:"pmo/spore/jpn, or skaw/passero, or boston/bb",g:"wide",r1:"2026-09-03",r2:"2026-11-03",d:75403,b:2013},
+{v:"SHANDONG PENG CHENG",ow:"Shandong",ch:"CARGILL",hire:"$ 15,100",hn:15100,ob:"JZH",cb:"ASC+NPA",cp:"2025-11-20",dely:"2025-12-05",from:"2025-12-05",p1:9,p2:11,p2a:1,area:"spore/jpn range",g:"pac",r1:"2026-08-21",r2:"2026-11-20",d:82154,b:2010},
+{v:"CAPE KENNEDY",ow:"Cape Shipping",ch:"SWISSMARINE",hire:"$ 15,250",hn:15250,ob:"API",cb:"ASC+NPA",cp:"2025-11-25",dely:"2025-11-26",from:"2025-11-26",p1:6,p2:10,area:"pmo/spore/jpn range",g:"pac",r1:"2026-05-26",r2:"2026-09-26",d:81391,b:2012},
+{v:"TRANSCENDEN AG",ow:"Transcendent",ch:"CLASSIC",hire:"$ 17,600",hn:17600,ob:"NHE",cb:"NSK",cp:"2025-11-25",dely:"2025-12-13",from:"2025-12-13",p1:11,p2:13,area:"spore/jpn range",g:"pac",r1:"2026-11-13",r2:"2027-01-13",d:84978,b:2022},
+{v:"SDTR FAITH",ow:"SDTR",ch:"SMART GRAIN",hire:"$ 16,500",hn:16500,ob:"JAZH",cb:"NHE",cp:"2025-12-03",dely:"2026-03-21",from:"2026-03-21",p1:9,p2:11,area:"spore/jpn range",g:"pac",r1:"2026-12-21",r2:"2027-02-21",d:84988,b:2022},
+{v:"KAVO YERAKI",ow:"Gourdomichalis",ch:"LANGLOIS",hire:"$ 15,000",hn:15000,ob:"ANK",cb:"ANK",cp:"2025-12-08",dely:"2025-12-20",from:"2025-12-20",p1:4,p2:7,area:"spore/jpn range",g:"pac",r1:"2026-04-20",r2:"2026-07-20",d:82926,b:2006},
+{v:"BBG BRIGHT",ow:"Growing Ocean",ch:"REACHY",hire:"$ 13,100",hn:13100,ob:"BEE+ASC",cb:"JZH",cp:"2025-12-09",dely:"2025-12-09",from:"2025-12-09",p1:6,p2:9,area:"pmo-jpn range",g:"pac",r1:"2026-06-09",r2:"2026-09-09",d:82043,b:2012},
+{v:"CK BLUEBELL",ow:"SM Chang Myung Shipping",ch:"ELEMENT",hire:"$ 13,000 first 7.5 mos, then $ 13,500",hn:13500,ob:"MPE",cb:"MPE",cp:"2025-12-12",dely:"2025-12-17",from:"2025-12-17",p1:6,p2:10,area:"pmo/jpn // if >9 months then spore/jpn",g:"pac",r1:"2026-06-17",r2:"2026-11-01",d:81147,b:2011},
+{v:"EKOUO",ow:"Zenith Ocean Shipping",ch:"NOROK",hire:"$ 5,000 first 15 days, then $ 13,000",hn:13000,ob:"JLI",cb:"JLI",cp:"2025-12-22",dely:"2025-12-29",from:"2025-12-29",p1:10,p2:12,area:"PG",g:"pg",r1:"2026-10-14",r2:"2027-01-13",d:75845,b:2002},
+{v:"TRANSCENDEN FORTUNE",ow:"Transcenden Global ltd",ch:"CLASSIC",hire:"117% (index)",hn:null,ob:"NHE",cb:"NSK",cp:"2026-01-08",dely:"2026-01-27",from:"2026-01-27",p1:11,p2:13,area:"pmo/jpn",g:"pac",r1:"2026-12-27",r2:"2027-03-14",d:84940,b:2023},
+{v:"BBG JOURNEY",ow:"Ming Wah International",ch:"KOCH",hire:"$ 17,000",hn:17000,ob:"JZH",cb:"ASC",cp:"2026-01-27",dely:"2026-02-04",from:"2026-02-04",p1:8.1,p2:11.1,area:"pmo/jpn",g:"pac",r1:"2026-10-08",r2:"2027-01-08",d:82204,b:2017},
+{v:"CK BLUEBELL",ow:"Element (relet)",ch:"GLENCORE",hire:"$ 15,875",hn:15875,ob:"MPE",cb:"ASC",cp:"2026-01-29",dely:"2026-01-29",from:"2026-01-29",p1:6,p2:9,area:"spore/jpn",g:"pac",r1:"2026-07-14",r2:"2026-11-01",d:81147,b:2011},
+{v:"FORTUNE UNION",ow:"Zhung On Oversea",ch:"TEAM BULK",hire:"$ 8,250 first 40 days, then $ 9,500",hn:9500,ob:"JLI",cb:"MBA",cp:"2026-02-06",dely:"2026-02-21",from:"2026-02-21",p1:11,p2:13,area:"PG",g:"pg",r1:"2027-01-21",r2:"2026-11-02",d:73729,b:1998,note:"min/max as printed in source"},
+{v:"LENI",ow:"Minoa Marine",ch:"LANGLOIS",hire:"$ 15,825",hn:15825,ob:"MPE",cb:"MPE",cp:"2026-02-06",dely:"2026-02-04",from:"2026-02-04",p1:7,p2:10,area:"red sea/spore",g:"other",r1:"2026-09-04",r2:"2026-12-04",d:77008,b:2008},
+{v:"SAKIZAYA POWER",ow:"Wisdom",ch:"MERCURIA",hire:"106% (index)",hn:null,ob:"NPA",cb:"ASC",cp:"2026-02-26",dely:"2026-04-25",from:"2026-04-25",p1:11,p2:null,area:"pmo/jpn range",g:"pac",r1:"2027-03-25",r2:null,d:81864,b:2017},
+{v:"MINOAN MARATHON",ow:"MTS Marine (via Modion)",ch:"KLAVENESS",hire:"$ 18,600",hn:18600,ob:"MPE",cb:"JAZH+SEF",cp:"2026-03-27",dely:"2026-03-31",from:"2026-03-31",p1:6,p2:9,area:"pmo/jpn range",g:"pac",r1:"2026-09-15",r2:"2027-01-15",d:81945,b:2015},
+{v:"SDTR HERA",ow:"SDTR",ch:"SMART GRAIN",hire:"$ 18,750",hn:18750,ob:"JAZH",cb:"NHE",cp:"2026-04-01",dely:"2026-04-10",from:"2026-04-10",p1:10.2,p2:12.2,area:"spore/jpn",g:"pac",r1:"2027-02-10",r2:"2027-04-10",d:84980,b:2022},
+{v:"EASTERN QUINCE",ow:"EGPN Bulk Carriers",ch:"SWISSMARINE",hire:"$ 16,250",hn:16250,ob:"NHE",cb:"NPA+ASC",cp:"2026-04-02",dely:"2026-03-12",from:"2026-03-12",p1:11,p2:13,area:"skaw/gib or pmo/jpn",g:"wide",r1:"2027-01-28",r2:"2027-04-27",d:81792,b:2013},
+{v:"ASL JUPITER",ow:"Montfort Maritime",ch:"NOVA MARINE CARRIERS",hire:"$ 17,100",hn:17100,ob:"OBE",cb:"OPE+MPE",cp:"2026-04-07",dely:"2026-04-14",from:"2026-04-14",p1:10,p2:12.4,area:"skaw/passero or pmo/jpn or boston/bb",g:"wide",r1:"2027-02-14",r2:"2027-04-14",d:81642,b:2012},
+{v:"MARINO",ow:"Technomar",ch:"BUNGE",hire:"$ 16,750",hn:16750,ob:"API",cb:"MPE+OPE",cp:"2026-04-09",dely:"2026-04-09",from:"2026-04-09",p1:9.1,p2:11.7,area:"skaw/gib - pmo/jpn - boston/bb",g:"wide",r1:"2027-01-09",r2:"2027-03-09",d:82012,b:2011},
+{v:"ORIENT PEONY",ow:"Tongli",ch:"HANARO",hire:"$ 18,150",hn:18150,ob:"JAZH+NHE",cb:"YJE",cp:"2026-04-16",dely:null,from:null,p1:14.4,p2:16.4,area:"spore/jpn",g:"pac",r1:null,r2:null,d:82195,b:2022},
+{v:"ARWEN GEMINI",ow:"Arwen Gemini",ch:"NOVA MARINE CARRIERS",hire:"$ 14,850",hn:14850,ob:"FEG",cb:"OPE",cp:"2026-04-16",dely:null,from:null,p1:30,p2:36,area:"skaw/passero - pmo/jpn - boston/bb",g:"wide",r1:null,r2:null,d:81963,b:2013},
+{v:"ARWEN GEMINI",ow:"Nova Marine Carriers (relet)",ch:"ELEMENT",hire:"$ 17,150",hn:17150,ob:"OPE+MPE",cb:"MPE",cp:"2026-04-16",dely:null,from:null,p1:9,p2:12,p2a:1,area:"skaw/passero - pmo/jpn - boston/bb",g:"wide",r1:null,r2:null,d:81963,b:2013},
+{v:"IONIAN STAR I",ow:"Sea Trade Marine",ch:"NORDEN",hire:"$ 19,750",hn:19750,ob:"MGU",cb:"NSK",cp:"2026-04-16",dely:null,from:null,p1:11,p2:13,area:"skaw/passero - spore/jpn - boston/bb",g:"wide",r1:null,r2:null,d:82000,b:2026},
+{v:"CPT STEFANOS M",ow:"Dianik (via Aeolos)",ch:"CRC",hire:"$ 15,000",hn:15000,ob:"DKO",cb:"DKO",cp:"2026-04-22",dely:"2026-05-08",from:"2026-05-08",p1:4,p2:7.1,area:"skaw/med - boston/bb - gib/rbay - spore/jpn",g:"wide",r1:"2026-08-24",r2:"2026-12-08",d:75213,b:2008},
+{v:"APJ PRIYA",ow:"Apeejay Shipping",ch:"AL GHURAIR",hire:"$ 17,500",hn:17500,ob:"ABO+BEE",cb:"OPE",cp:"2026-05-01",dely:"2026-05-03",from:"2026-05-03",p1:3,p2:6,area:"ww",g:"wide",r1:"2026-07-19",r2:"2026-11-18",d:82295,b:2006},
+{v:"CORINNA",ow:"Halcoussis",ch:"SWISSMARINE",hire:"$ 17,000",hn:17000,ob:"API",cb:"NPA",cp:"2026-05-07",dely:"2026-05-08",from:"2026-05-08",p1:9,p2:11,area:"india/jpn - skaw/gib - boston/bb - vancouver/lazaro cardenas",g:"wide",r1:"2027-02-08",r2:"2027-04-08",d:81675,b:2013},
+{v:"REGINA",ow:"Piavia",ch:"REFINED SUCCESS",hire:"$ 20,500",hn:20500,ob:"VCM",cb:"NHE",cp:"2026-05-12",dely:null,from:null,p1:10,p2:12,area:"spore/jpn",g:"pac",r1:null,r2:null,d:82377,b:2022,note:"DC from cp dd 11.02.25"},
+{v:"MSXT HELEN",ow:"Fortune Freedom",ch:"CLASSIC",hire:"$ 21,000",hn:21000,ob:"CWA",cb:"NSK",cp:"2026-04-14",dely:"2026-05-30",from:"2026-05-30",p1:1.5,p2:2.5,area:"spore/jpn",g:"pac",r1:"2026-06-30",r2:"2026-07-30",d:85295,b:2022},
+{v:"DA TANG 712",ow:"Jiangsu Jinghong Shipping",ch:"OLDENDORFF",hire:"$ 19,500",hn:19500,ob:"ROH",cb:"ROH",cp:"2026-05-19",dely:null,from:null,p1:3,p2:5,area:"spore/jpn",g:"pac",r1:null,r2:null,d:75500,b:2012,note:"dwt/built est. from sister DA TANG 711"},
+{v:"MELIA",ow:"Diana",ch:"CRC",hire:"$ 16,900",hn:16900,ob:"DKO",cb:"DKO",cp:"2026-05-25",dely:null,from:null,p1:3,p2:5,area:"spore/jpn range, or pmo/spore range",g:"pac",r1:null,r2:null,d:76225,b:2005,note:"DC from cp dd 01.01.25"},
+{v:"ANDROMACHE",ow:"Transocean",ch:"CLASSIC",hire:"$ 20,000",hn:20000,ob:"NSK",cb:"NSK",cp:"2026-05-26",dely:null,from:null,p1:4.5,p2:6.1,area:"spore/jpn",g:"pac",r1:null,r2:null,d:81212,b:2017},
+];
+
+// ---- derive estimated redeliveries where missing (CP/delivery + period months) ----
+const MS=864e5, MON=30.44*MS;
+F.forEach(f=>{
+  f.est=false;
+  const base=f.dely||f.from||f.cp;
+  const hadR1=!!f.r1;
+  if(!hadR1&&f.p1){f.r1=new Date(Date.parse(base)+f.p1*MON).toISOString().slice(0,10);f.est=true;}
+  if(!f.r2&&f.p2&&!hadR1){f.r2=new Date(Date.parse(base)+f.p2*MON).toISOString().slice(0,10);}
+});
+
+const GROUPS={pac:"Pacific",wide:"Wide/Atl",pg:"PG",other:"Other"};
+const COLORS={pac:"var(--pac)",wide:"var(--wide)",pg:"var(--pg)",other:"var(--other)"};
+const T0=Date.parse("2025-01-01"), T1=Date.parse("2030-01-01"), SPAN=T1-T0;
+const TODAY=Date.parse("2026-06-10");
+const pct=d=>((Date.parse(d)-T0)/SPAN*100);
+const fmt=n=>n.toLocaleString("en-US");
+const dd=s=>{const d=new Date(s);return `${d.getDate()} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()]} ${String(d.getFullYear()).slice(2)}`;};
+const perStr=f=>`${f.p1a?'abt ':''}${f.p1}${f.p2?` – ${f.p2a?'abt ':''}${f.p2}`:'+'} mos`;
+const days1=f=>f.r1?Math.round((Date.parse(f.r1)-TODAY)/MS):null;
+
+let sortKey="r1", sortDir=1, view="tl";
+
+function filtered(){
+  const q=document.getElementById("q").value.trim().toLowerCase();
+  const fa=document.getElementById("fArea").value;
+  const fo=document.getElementById("fOpen").checked;
+  const fe=document.getElementById("fEst").checked;
+  return F.filter(f=>
+    (!q||(f.v+" "+f.ow+" "+f.ch+" "+f.ob+" "+f.cb).toLowerCase().includes(q)) &&
+    (!fa||f.g===fa) &&
+    (!fo||(f.r1&&Date.parse(f.r1)<=TODAY&&(!f.r2||Date.parse(f.r2)>=TODAY))) &&
+    (fe||!f.est));
+}
+function sorted(a){
+  return [...a].sort((x,y)=>{
+    let vx=x[sortKey],vy=y[sortKey];
+    if(sortKey==="r1"||sortKey==="cp"){vx=vx?Date.parse(vx):Infinity;vy=vy?Date.parse(vy):Infinity;}
+    if(vx==null)return 1; if(vy==null)return -1;
+    if(typeof vx==="string")return sortDir*vx.localeCompare(vy);
+    return sortDir*(vx-vy);
+  });
+}
+
+function renderStats(){
+  const a=filtered();
+  const rates=a.filter(f=>f.hn).map(f=>f.hn);
+  const avg=rates.length?Math.round(rates.reduce((s,x)=>s+x,0)/rates.length):0;
+  const idx=a.filter(f=>!f.hn).length;
+  const open=a.filter(f=>f.r1&&Date.parse(f.r1)<=TODAY&&(!f.r2||Date.parse(f.r2)>=TODAY)).length;
+  const soon=a.filter(f=>{const d=days1(f);return d!==null&&d>0&&d<=90;}).length;
+  const est=a.filter(f=>f.est).length;
+  document.getElementById("stats").innerHTML=`
+    <div class="stat"><b>${a.length}</b><span>fixtures shown</span></div>
+    <div class="stat"><b>$ ${fmt(avg)}</b><span>avg fixed hire/day</span></div>
+    <div class="stat"><b>${idx}</b><span>index-linked</span></div>
+    <div class="stat"><b>${open}</b><span>redelivery window open now</span></div>
+    <div class="stat"><b>${soon}</b><span>opening within 90 days</span></div>
+    <div class="stat"><b>${est}</b><span class="estflag">estimated rows</span></div>`;
+}
+
+function monthHeader(){
+  let yh="";
+  for(let y=2025;y<=2029;y++) yh+=`<div>${y}</div>`;
+  let mh="";
+  const L=["J","F","M","A","M","J","J","A","S","O","N","D"];
+  const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  for(let y=2025;y<=2029;y++)for(let m=0;m<12;m++)
+    mh+=`<div class="${m===0?'jan':''}" title="${MN[m]} ${y}">${L[m]}</div>`;
+  return `<div class="tl-head"><div></div><div class="tl-years">${yh}</div></div>
+          <div class="tl-head"><div class="tl-corner">VESSEL</div><div class="tl-months">${mh}</div></div>`;
+}
+
+function renderTimeline(){
+  const a=sorted(filtered());
+  let rows=monthHeader();
+  for(const f of a){
+    let bars="";
+    const start=f.dely||f.from||f.cp;
+    const tip=`${f.v} — ${fmt(f.d)} dwt / ${f.b}\n${f.ow} → ${f.ch}\n${f.hire}\nPeriod: ${perStr(f)}\nRedelivery: ${f.area}${f.r1?`\nWindow: ${dd(f.r1)}${f.r2?' – '+dd(f.r2):''}`:''}${f.est?'\n(estimated from CP + period)':''}${f.note?'\n'+f.note:''}\nBrokers: ${f.ob} / ${f.cb}`;
+    if(f.r1){
+      const end1=f.r1, end2=f.r2||new Date(Date.parse(f.r1)+60*MS).toISOString().slice(0,10);
+      const lo=Math.min(Date.parse(end1),Date.parse(end2)), hi=Math.max(Date.parse(end1),Date.parse(end2));
+      bars+=`<div class="bar ${f.est?'est':''}" style="left:${pct(start)}%;width:${(lo-Date.parse(start))/SPAN*100}%;background:${COLORS[f.g]}" title="${tip}">${f.ch} ${f.hn?'$ '+fmt(f.hn):f.hire}</div>`;
+      bars+=`<div class="bar win ${f.est?'est':''}" style="left:${(lo-T0)/SPAN*100}%;width:${(hi-lo)/SPAN*100}%" title="${tip}"></div>`;
+    }
+    bars+=`<div class="today" style="left:${(TODAY-T0)/SPAN*100}%"></div>`;
+    rows+=`<div class="tl-row">
+      <div class="tl-label" title="${tip}">${f.v}${f.est?' <span class="estflag">est.</span>':''}<small>${fmt(f.d)} dwt · ${f.b} · ${f.ow}</small></div>
+      <div class="tl-track">${bars}</div></div>`;
+  }
+  document.getElementById("viewTl").innerHTML=`<div class="tl">${rows}</div>`;
+}
+
+function renderTable(){
+  const a=sorted(filtered());
+  const cols=[["v","Vessel"],["d","DWT"],["b","Built"],["ow","Owner"],["ch","Charterer"],["hn","Hire"],["cp","CP date"],["p1","Period"],["r1","Redelivery window"],["dd1","Days→min"],["g","Area"],["ob","Brokers"]];
+  a.forEach(f=>f.dd1=days1(f));
+  let h="<tr>"+cols.map(([k,l])=>`<th data-k="${k}">${l} ${sortKey===k?`<span class="arr">${sortDir>0?"▲":"▼"}</span>`:""}</th>`).join("")+"</tr>";
+  let b="";
+  for(const f of a){
+    const d1=days1(f);
+    b+=`<tr>
+      <td class="vname">${f.v}${f.est?' <span class="estflag">est.</span>':''}${f.note?`<span class="small">${f.note}</span>`:""}</td>
+      <td class="num">${fmt(f.d)}</td><td>${f.b}</td>
+      <td>${f.ow}</td><td>${f.ch}</td>
+      <td class="rate">${f.hire}</td>
+      <td>${dd(f.cp)}</td>
+      <td>${perStr(f)}</td>
+      <td>${f.r1?dd(f.r1)+(f.r2?" – "+dd(f.r2):" +"):"—"}</td>
+      <td class="num ${d1===null?'':(d1<=0?'dneg':'dpos')}">${d1===null?"—":d1}</td>
+      <td><span class="pill ${f.g}">${GROUPS[f.g]}</span><span class="small">${f.area}</span></td>
+      <td>${f.ob} / ${f.cb}</td></tr>`;
+  }
+  document.getElementById("viewTb").innerHTML=`<table><thead>${h}</thead><tbody>${b}</tbody></table>
+    <p style="margin-top:8px;font-size:11px;color:var(--muted)">Days→min = days from 10 Jun 2026 to earliest redelivery (negative = window already open) · <span class="estflag">est.</span> = redelivery computed from CP date + period</p>`;
+  document.querySelectorAll("th").forEach(th=>th.onclick=()=>{
+    const k=th.dataset.k;
+    if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=1;}
+    renderTable();
+  });
+}
+
+function render(){renderStats();view==="tl"?renderTimeline():renderTable();}
+["q","fArea","fOpen","fEst"].forEach(id=>document.getElementById(id).addEventListener("input",render));
+document.getElementById("tabTl").onclick=()=>{view="tl";
+  document.getElementById("tabTl").classList.add("on");document.getElementById("tabTb").classList.remove("on");
+  document.getElementById("viewTl").style.display="";document.getElementById("viewTb").style.display="none";render();};
+document.getElementById("tabTb").onclick=()=>{view="tb";
+  document.getElementById("tabTb").classList.add("on");document.getElementById("tabTl").classList.remove("on");
+  document.getElementById("viewTb").style.display="";document.getElementById("viewTl").style.display="none";render();};
+render();
+const themeBtn=document.getElementById("themeBtn");
+const setThemeIcon=()=>themeBtn.textContent=document.documentElement.dataset.theme==="dark"?"☾":"☀";
+themeBtn.onclick=()=>{
+  const t=document.documentElement.dataset.theme==="dark"?"light":"dark";
+  document.documentElement.dataset.theme=t;
+  localStorage.setItem('fleet-theme',t);
+  setThemeIcon();
+};
+setThemeIcon();
+if(location.hash==="#table")document.getElementById("tabTb").click();
+</script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMX Period Fixtures — Analytics</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{--bg:#f4f6f9;--card:#fff;--ink:#1a2433;--muted:#6b7686;--line:#e2e7ee;--accent:#1f4e79;
+    --pac:#7cc4dd;--wide:#f5d442;--pg:#f5a86e;--other:#8fbf6f}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font:14px/1.5 "Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--ink);padding:18px}
+  header{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;margin-bottom:14px}
+  h1{font-size:21px;color:var(--accent)}
+  header .sub{color:var(--muted);font-size:13px}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .tabs{display:flex;gap:6px;margin-left:auto}
+  .tabs a,.tabs button{padding:7px 16px;border:1px solid var(--line);background:var(--card);border-radius:6px;cursor:pointer;font-size:13px;text-decoration:none;color:var(--ink)}
+  .tabs .on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .theme-btn{margin-left:auto;width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;background:#f6a821;color:#fff;font-size:15px;line-height:34px;box-shadow:0 1px 3px rgba(0,0,0,.25);flex:0 0 auto}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+  .panel.wide{grid-column:1/-1}
+  .panel h2{font-size:15px;color:var(--accent);margin-bottom:2px}
+  .why{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+  .why b{color:#3b4a5e}
+  .ch{position:relative;height:235px}
+  .panel.wide .ch{height:260px}
+  .kpis{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:9px 14px;min-width:140px}
+  .kpi b{display:block;font-size:19px}
+  .kpi span{font-size:12px;color:var(--muted)}
+  footer{margin-top:14px;font-size:11px;color:var(--muted)}
+  .theme-btn{}
+  html[data-theme=dark]{--bg:#0e1520;--card:#161f2c;--ink:#e4eaf3;--muted:#94a4b9;--line:#273245;--accent:#7fb6e8}
+  html[data-theme=dark] .why b{color:#c6d2e2}
+  html[data-theme=dark] .theme-btn{background:#2e3a52;color:#ffd76e}
+  html[data-theme=dark] .tabs a,html[data-theme=dark] .tabs button{background:#243349;border-color:#3c4d68;color:#e4eaf3}
+  html[data-theme=dark] .tabs .on{background:#7fb6e8;border-color:#7fb6e8;color:#0e1520;font-weight:600}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>PERIOD FIXTURES — ANALYTICS</h1>
+  <span class="sub">derived from the period fixtures report of 10 June 2026</span>
+  <button id="themeBtn" class="theme-btn" title="Day / night mode">☀</button>
+</header>
+
+<div class="kpis" id="kpis"></div>
+
+<div class="controls">
+  <div class="tabs">
+    <a href="index.html">Timeline</a>
+    <a href="index.html#table">Table</a>
+    <button class="on">Analytics</button>
+  </div>
+</div>
+
+<div class="grid">
+
+  <div class="panel wide">
+    <h2>1 · Period rate trend (hire vs CP date)</h2>
+    <p class="why"><b>Why:</b> the single most useful chart in this report — what the pmx period market actually paid over time. Each dot = a fixed-rate fixture at its CP date. The trend is unmistakable: ~$10–15k through 2025, ~$15–18k in Q1 2026, and $19–21k by May 2026 (MSXT HELEN $21k, REGINA $20.5k, ANDROMACHE $20k). Quote period today off the right-hand cluster, not off 2025 memories. Short periods (≤5 mos) command a premium — check the dot's tooltip before benchmarking.</p>
+    <div class="ch"><canvas id="c1"></canvas></div>
+  </div>
+
+  <div class="panel">
+    <h2>2 · Tonnage coming open, month by month</h2>
+    <p class="why"><b>Why:</b> the re-delivery pipeline of this period fleet, stacked by redelivery area. June–September 2026 is crowded (incl. windows already open: ISMENE, MSXT BELLONA, AGIA YPOMONI…) — mostly into the Pacific, which caps Far-East spot sentiment; the Q1 2027 wave is where the 2026 spring fixtures start coming back.</p>
+    <div class="ch"><canvas id="c2"></canvas></div>
+  </div>
+
+  <div class="panel">
+    <h2>3 · Days until earliest redelivery — next 15</h2>
+    <p class="why"><b>Why:</b> the working queue. Red = the minimum period is already served, the ship can be redelivered any day (effectively spot/relet candidates); anything under ~90 days is current re-chartering business. Useful both to chase the next employment and to spot prompt relet candidates among charterers (Element, Mizzen, CRC…).</p>
+    <div class="ch"><canvas id="c3"></canvas></div>
+  </div>
+
+  <div class="panel">
+    <h2>4 · Charterer activity</h2>
+    <p class="why"><b>Why:</b> who has been taking pmx period. Refined Success (4), CRC (4 incl. Diana relets), Classic (4+) and the trader names (Element, Mercuria, Swissmarine) dominate — these are the natural counterparties to call with period candidates, and the red line shows what each has been paying on average (fixed-rate fixtures only).</p>
+    <div class="ch"><canvas id="c4"></canvas></div>
+  </div>
+
+  <div class="panel">
+    <h2>5 · Period length taken</h2>
+    <p class="why"><b>Why:</b> what duration the market is actually trading. The bulk of fixtures sit in the 9–12 month bucket (one-year period remains the standard), short 3–6 month cover picked up in spring 2026 at premium rates, and only outliers go beyond 14 months (RUBINA 19–21, ARWEN GEMINI 30–36). Helps frame realistic period proposals.</p>
+    <div class="ch"><canvas id="c5"></canvas></div>
+  </div>
+
+  <div class="panel">
+    <h2>6 · Broker league table</h2>
+    <p class="why"><b>Why:</b> who is doing the period business (owners' side; joint fixtures credited to each office). Useful for knowing who to watch — and where the competition sits on each account.</p>
+    <div class="ch"><canvas id="c6"></canvas></div>
+  </div>
+
+  <div class="panel">
+    <h2>7 · Rate vs vessel age</h2>
+    <p class="why"><b>Why:</b> the age discount, quantified on real fixtures. Modern eco units (2022+ : SDTR, TRANSCENDEN, REGINA, MSXT HELEN) earn a clear premium; the pre-2008 ships (MU XI 2000, FORTUNE UNION 1998, EKOUO 2002) trade $4–7k below contemporaneous modern fixtures. Use it to adjust a benchmark fixture to the candidate ship's age before quoting.</p>
+    <div class="ch"><canvas id="c7"></canvas></div>
+  </div>
+
+</div>
+
+<footer>All figures from the PERIOD FIXTURES report (10 June 2026); dwt/built from VesselFinder. Index-linked fixtures (94%, 106%, 117% of BPI) excluded from $ charts. Tiered rates counted at balance rate. Estimated redeliveries (CP + period) included in pipeline charts.</footer>
+
+<script>
+const THEME=localStorage.getItem('fleet-theme')||'light';
+document.documentElement.dataset.theme=THEME;
+const F=[
+{v:"ORIENT POINT",ch:"REFINED SUCCESS",hn:15000,ob:"VCM",cp:"2025-04-02",p1:12,r1:"2026-04-09",g:"pac",d:82011,b:2025},
+{v:"ISMENE",ch:"CRC",hn:11000,ob:"DKO",cp:"2025-04-15",p1:10.8,r1:"2026-03-20",g:"wide",d:77910,b:2013},
+{v:"MSXT BELLONA",ch:"CLASSIC",hn:12380,ob:"CWA",cp:"2025-05-07",p1:10,r1:"2026-03-25",g:"pac",d:82169,b:2012},
+{v:"RUBINA",ch:"REFINED SUCCESS",hn:14200,ob:"VCM",cp:"2025-05-14",p1:19,r1:"2026-12-08",g:"pac",d:82384,b:2022},
+{v:"GRAND STAR",ch:"UNIWIN",hn:10000,ob:"JLI",cp:"2025-06-06",p1:11,r1:"2026-04-20",g:"wide",d:81602,b:2013},
+{v:"TOWER POINT",ch:"REFINED SUCCESS",hn:13000,ob:"VCM",cp:"2025-06-03",p1:12,r1:"2026-06-12",g:"pac",d:82050,b:2025},
+{v:"ALANI",ch:"MIZZEN",hn:10000,ob:"LCN",cp:"2025-06-24",p1:11,r1:"2026-05-12",g:"pac",d:75772,b:2004},
+{v:"LUCKY LOONG",ch:"MIZZEN",hn:null,ob:"LCN",cp:"2025-06-26",p1:11,r1:"2026-05-28",g:"pac",d:76469,b:2005},
+{v:"MUSIGNY",ch:"PIONEER",hn:15750,ob:"NHE+ASC",cp:"2025-08-25",p1:11,r1:"2026-11-21",g:"pac",d:82133,b:2026},
+{v:"AGIA YPOMONI",ch:"ELEMENT",hn:13850,ob:"API",cp:"2025-01-17",p1:5,r1:"2026-03-21",g:"wide",d:75700,b:2012},
+{v:"GRAECIA AETERNA",ch:"LDC",hn:15000,ob:"DKO",cp:"2025-02-17",p1:7,r1:"2026-10-23",g:"wide",d:81001,b:2014},
+{v:"SAKIZAYA ELEGANCE",ch:"MERCURIA",hn:null,ob:"NPA",cp:"2025-10-03",p1:11,r1:"2026-10-08",g:"pac",d:81938,b:2015},
+{v:"MU XI",ch:"UNIWIN",hn:11500,ob:"JLI",cp:"2025-10-15",p1:6,r1:"2026-06-20",g:"pac",d:73288,b:2000},
+{v:"MAERA",ch:"CRC",hn:11750,ob:"DKO",cp:"2025-10-21",p1:10,r1:"2026-09-03",g:"wide",d:75403,b:2013},
+{v:"SHANDONG PENG CHENG",ch:"CARGILL",hn:15100,ob:"JZH",cp:"2025-11-20",p1:9,r1:"2026-08-21",g:"pac",d:82154,b:2010},
+{v:"CAPE KENNEDY",ch:"SWISSMARINE",hn:15250,ob:"API",cp:"2025-11-25",p1:6,r1:"2026-05-26",g:"pac",d:81391,b:2012},
+{v:"TRANSCENDEN AG",ch:"CLASSIC",hn:17600,ob:"NHE",cp:"2025-11-25",p1:11,r1:"2026-11-13",g:"pac",d:84978,b:2022},
+{v:"SDTR FAITH",ch:"SMART GRAIN",hn:16500,ob:"JAZH",cp:"2025-12-03",p1:9,r1:"2026-12-21",g:"pac",d:84988,b:2022},
+{v:"KAVO YERAKI",ch:"LANGLOIS",hn:15000,ob:"ANK",cp:"2025-12-08",p1:4,r1:"2026-04-20",g:"pac",d:82926,b:2006},
+{v:"BBG BRIGHT",ch:"REACHY",hn:13100,ob:"BEE+ASC",cp:"2025-12-09",p1:6,r1:"2026-06-09",g:"pac",d:82043,b:2012},
+{v:"CK BLUEBELL",ch:"ELEMENT",hn:13500,ob:"MPE",cp:"2025-12-12",p1:6,r1:"2026-06-17",g:"pac",d:81147,b:2011},
+{v:"EKOUO",ch:"NOROK",hn:13000,ob:"JLI",cp:"2025-12-22",p1:10,r1:"2026-10-14",g:"pg",d:75845,b:2002},
+{v:"TRANSCENDEN FORTUNE",ch:"CLASSIC",hn:null,ob:"NHE",cp:"2026-01-08",p1:11,r1:"2026-12-27",g:"pac",d:84940,b:2023},
+{v:"BBG JOURNEY",ch:"KOCH",hn:17000,ob:"JZH",cp:"2026-01-27",p1:8.1,r1:"2026-10-08",g:"pac",d:82204,b:2017},
+{v:"CK BLUEBELL",ch:"GLENCORE",hn:15875,ob:"MPE",cp:"2026-01-29",p1:6,r1:"2026-07-14",g:"pac",d:81147,b:2011},
+{v:"FORTUNE UNION",ch:"TEAM BULK",hn:9500,ob:"JLI",cp:"2026-02-06",p1:11,r1:"2027-01-21",g:"pg",d:73729,b:1998},
+{v:"LENI",ch:"LANGLOIS",hn:15825,ob:"MPE",cp:"2026-02-06",p1:7,r1:"2026-09-04",g:"other",d:77008,b:2008},
+{v:"SAKIZAYA POWER",ch:"MERCURIA",hn:null,ob:"NPA",cp:"2026-02-26",p1:11,r1:"2027-03-25",g:"pac",d:81864,b:2017},
+{v:"MINOAN MARATHON",ch:"KLAVENESS",hn:18600,ob:"MPE",cp:"2026-03-27",p1:6,r1:"2026-09-15",g:"pac",d:81945,b:2015},
+{v:"SDTR HERA",ch:"SMART GRAIN",hn:18750,ob:"JAZH",cp:"2026-04-01",p1:10.2,r1:"2027-02-10",g:"pac",d:84980,b:2022},
+{v:"EASTERN QUINCE",ch:"SWISSMARINE",hn:16250,ob:"NHE",cp:"2026-04-02",p1:11,r1:"2027-01-28",g:"wide",d:81792,b:2013},
+{v:"ASL JUPITER",ch:"NOVA MARINE CARRIERS",hn:17100,ob:"OBE",cp:"2026-04-07",p1:10,r1:"2027-02-14",g:"wide",d:81642,b:2012},
+{v:"MARINO",ch:"BUNGE",hn:16750,ob:"API",cp:"2026-04-09",p1:9.1,r1:"2027-01-09",g:"wide",d:82012,b:2011},
+{v:"ORIENT PEONY",ch:"HANARO",hn:18150,ob:"JAZH+NHE",cp:"2026-04-16",p1:14.4,r1:"2027-06-28",g:"pac",d:82195,b:2022,est:1},
+{v:"ARWEN GEMINI",ch:"NOVA MARINE CARRIERS",hn:14850,ob:"FEG",cp:"2026-04-16",p1:30,r1:"2028-10-16",g:"wide",d:81963,b:2013,est:1},
+{v:"ARWEN GEMINI",ch:"ELEMENT",hn:17150,ob:"OPE+MPE",cp:"2026-04-16",p1:9,r1:"2027-01-16",g:"wide",d:81963,b:2013,est:1},
+{v:"IONIAN STAR I",ch:"NORDEN",hn:19750,ob:"MGU",cp:"2026-04-16",p1:11,r1:"2027-03-16",g:"wide",d:82000,b:2026,est:1},
+{v:"CPT STEFANOS M",ch:"CRC",hn:15000,ob:"DKO",cp:"2026-04-22",p1:4,r1:"2026-08-24",g:"wide",d:75213,b:2008},
+{v:"APJ PRIYA",ch:"AL GHURAIR",hn:17500,ob:"ABO+BEE",cp:"2026-05-01",p1:3,r1:"2026-07-19",g:"wide",d:82295,b:2006},
+{v:"CORINNA",ch:"SWISSMARINE",hn:17000,ob:"API",cp:"2026-05-07",p1:9,r1:"2027-02-08",g:"wide",d:81675,b:2013},
+{v:"REGINA",ch:"REFINED SUCCESS",hn:20500,ob:"VCM",cp:"2026-05-12",p1:10,r1:"2027-03-12",g:"pac",d:82377,b:2022,est:1},
+{v:"MSXT HELEN",ch:"CLASSIC",hn:21000,ob:"CWA",cp:"2026-04-14",p1:1.5,r1:"2026-06-30",g:"pac",d:85295,b:2022},
+{v:"DA TANG 712",ch:"OLDENDORFF",hn:19500,ob:"ROH",cp:"2026-05-19",p1:3,r1:"2026-08-19",g:"pac",d:75500,b:2012,est:1},
+{v:"MELIA",ch:"CRC",hn:16900,ob:"DKO",cp:"2026-05-25",p1:3,r1:"2026-08-25",g:"pac",d:76225,b:2005,est:1},
+{v:"ANDROMACHE",ch:"CLASSIC",hn:20000,ob:"NSK",cp:"2026-05-26",p1:4.5,r1:"2026-10-09",g:"pac",d:81212,b:2017,est:1},
+];
+const GROUPS={pac:"Pacific",wide:"Wide/Atl",pg:"PG",other:"Other"};
+const COL={pac:"#7cc4dd",wide:"#f5d442",pg:"#f5a86e",other:"#8fbf6f"};
+const TODAY=new Date("2026-06-10");
+const fmt=n=>n.toLocaleString("en-US");
+Chart.defaults.font.family='"Segoe UI",system-ui,sans-serif';
+Chart.defaults.color=THEME==="dark"?"#cfd9e6":"#3b4a5e";
+Chart.defaults.borderColor=THEME==="dark"?"rgba(255,255,255,.12)":"rgba(0,0,0,.1)";
+const themeBtn=document.getElementById("themeBtn");
+themeBtn.textContent=THEME==="dark"?"☾":"☀";
+themeBtn.onclick=()=>{localStorage.setItem('fleet-theme',THEME==="dark"?"light":"dark");location.reload();};
+const ACC=THEME==="dark"?"#7fb6e8":"#1f4e79";
+
+const fixed=F.filter(f=>f.hn);
+
+// KPIs
+{
+const avg=Math.round(fixed.reduce((s,f)=>s+f.hn,0)/fixed.length);
+const last90=fixed.filter(f=>Date.parse(f.cp)>TODAY.getTime()-90*864e5);
+const avg90=Math.round(last90.reduce((s,f)=>s+f.hn,0)/last90.length);
+const open=F.filter(f=>Date.parse(f.r1)<=TODAY.getTime()).length;
+document.getElementById("kpis").innerHTML=`
+ <div class="kpi"><b>${F.length}</b><span>period fixtures (Apr 25 – Jun 26)</span></div>
+ <div class="kpi"><b>$ ${fmt(avg90)}</b><span>avg hire, fixtures of last 90 days</span></div>
+ <div class="kpi"><b>$ ${fmt(avg)}</b><span>avg hire, whole sample</span></div>
+ <div class="kpi"><b>${open}</b><span>redelivery windows already open</span></div>
+ <div class="kpi"><b>${F.filter(f=>!f.hn).length}</b><span>index-linked fixtures</span></div>`;
+}
+
+// 1 · rate trend
+{
+const pts=fixed.map(f=>({x:Date.parse(f.cp),y:f.hn,f}));
+new Chart(c1,{type:"scatter",data:{datasets:[{label:"fixture",data:pts,pointRadius:5,pointHoverRadius:7,
+ backgroundColor:pts.map(p=>COL[p.f.g])}]},
+ options:{maintainAspectRatio:false,
+ scales:{x:{type:"linear",min:Date.parse("2025-01-01"),max:Date.parse("2026-07-01"),
+   ticks:{callback:v=>{const d=new Date(v);return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()]+" "+String(d.getFullYear()).slice(2);},maxTicksLimit:18}},
+  y:{ticks:{callback:v=>"$"+v/1000+"k"},title:{display:true,text:"hire $/day"}}},
+ plugins:{legend:{display:false},
+  tooltip:{callbacks:{label:c=>{const f=c.raw.f;return `${f.v} — ${f.ch}: $ ${fmt(f.hn)} (${f.p1} mos, ${GROUPS[f.g]})`;}}}}}});
+}
+
+// 2 · redeliveries per month
+{
+const keys=[];const labels=[];
+let y=2026,m=6;
+for(let i=0;i<14;i++){keys.push(`${y}-${String(m).padStart(2,"0")}`);labels.push(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m-1]+" "+String(y).slice(2));m++;if(m>12){m=1;y++;}}
+const ds=Object.keys(GROUPS).map(g=>({label:GROUPS[g],backgroundColor:COL[g],stack:"a",
+ data:keys.map(k=>F.filter(f=>f.g===g&&Date.parse(f.r1)>=TODAY.getTime()&&f.r1.slice(0,7)===k).length)}));
+// already-open bucket
+const openN=F.filter(f=>Date.parse(f.r1)<TODAY.getTime()).length;
+new Chart(c2,{type:"bar",data:{labels:["OPEN NOW",...labels],datasets:ds.map(d=>({...d,data:[d.label==="Pacific"?0:0,...d.data]}))
+ .map((d,i)=>d)},
+ options:{maintainAspectRatio:false,
+ scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:9}}},y:{stacked:true,ticks:{stepSize:1},title:{display:true,text:"vessels redelivering"}}},
+ plugins:{tooltip:{callbacks:{footer:i=>{const k=keys[i[0].dataIndex-1];if(!k)return F.filter(f=>Date.parse(f.r1)<TODAY.getTime()).map(f=>f.v).join(", ");
+  return F.filter(f=>f.r1.slice(0,7)===k).map(f=>f.v).join(", ");}}}}}});
+// patch OPEN NOW column (windows already open, any area)
+const ch=Chart.getChart(c2);
+Object.keys(GROUPS).forEach((g,gi)=>{ch.data.datasets[gi].data[0]=F.filter(f=>f.g===g&&Date.parse(f.r1)<TODAY.getTime()).length;});
+ch.update();
+}
+
+// 3 · days to earliest redelivery
+{
+const DAY=864e5;
+const q=F.map(f=>({n:f.v,g:f.g,days:Math.round((Date.parse(f.r1)-TODAY.getTime())/DAY)}))
+ .sort((a,b)=>a.days-b.days).slice(0,15);
+new Chart(c3,{type:"bar",data:{labels:q.map(s=>s.n),datasets:[{data:q.map(s=>s.days),
+ backgroundColor:q.map(s=>s.days<0?"#c92a2a":COL[s.g])}]},
+ options:{maintainAspectRatio:false,indexAxis:"y",
+ scales:{y:{ticks:{font:{size:9},autoSkip:false}},x:{title:{display:true,text:"days from 10 Jun 2026 (red = min period served)"}}},
+ plugins:{legend:{display:false}}}});
+}
+
+// 4 · charterer activity
+{
+const agg={};
+F.forEach(f=>{(agg[f.ch]=agg[f.ch]||{n:0,r:[],v:[]});agg[f.ch].n++;if(f.hn)agg[f.ch].r.push(f.hn);agg[f.ch].v.push(f.v);});
+const rows=Object.entries(agg).sort((a,b)=>b[1].n-a[1].n).slice(0,14);
+new Chart(c4,{data:{labels:rows.map(r=>r[0]),datasets:[
+ {type:"bar",label:"fixtures",data:rows.map(r=>r[1].n),backgroundColor:ACC,yAxisID:"y"},
+ {type:"line",label:"avg hire",data:rows.map(r=>r[1].r.length?Math.round(r[1].r.reduce((s,x)=>s+x,0)/r[1].r.length):null),
+  borderColor:"#c92a2a",backgroundColor:"#c92a2a",yAxisID:"y2",pointRadius:4,spanGaps:true}]},
+ options:{maintainAspectRatio:false,
+ scales:{x:{ticks:{maxRotation:60,minRotation:45,font:{size:9}},grid:{display:false}},
+  y:{ticks:{stepSize:1},title:{display:true,text:"fixtures"}},
+  y2:{position:"right",grid:{drawOnChartArea:false},ticks:{callback:v=>"$"+v/1000+"k"}}},
+ plugins:{tooltip:{callbacks:{footer:i=>rows[i[0].dataIndex][1].v.join(", ")}}}}});
+}
+
+// 5 · period length histogram
+{
+const buckets=[["≤ 4 mos",f=>f.p1<=4],["5–8 mos",f=>f.p1>4&&f.p1<9],["9–12 mos",f=>f.p1>=9&&f.p1<=12],["13+ mos",f=>f.p1>12]];
+new Chart(c5,{type:"bar",data:{labels:buckets.map(b=>b[0]),
+ datasets:[{data:buckets.map(([,fn])=>F.filter(fn).length),backgroundColor:["#8fbf6f","#7cc4dd","#f5d442","#f5a86e"]}]},
+ options:{maintainAspectRatio:false,
+ scales:{x:{grid:{display:false}},y:{ticks:{stepSize:2},title:{display:true,text:"fixtures (by min period)"}}},
+ plugins:{legend:{display:false},
+  tooltip:{callbacks:{footer:i=>F.filter(buckets[i[0].dataIndex][1]).map(f=>f.v).join(", ")}}}}});
+}
+
+// 6 · broker league
+{
+const agg={};
+F.forEach(f=>f.ob.split("+").forEach(b=>{b=b.trim();agg[b]=(agg[b]||0)+1;}));
+const rows=Object.entries(agg).sort((a,b)=>b[1]-a[1]);
+new Chart(c6,{type:"bar",data:{labels:rows.map(r=>r[0]),
+ datasets:[{data:rows.map(r=>r[1]),backgroundColor:ACC}]},
+ options:{maintainAspectRatio:false,
+ scales:{x:{ticks:{font:{size:9}},grid:{display:false}},y:{ticks:{stepSize:1},title:{display:true,text:"fixtures (owners' broker)"}}},
+ plugins:{legend:{display:false}}}});
+}
+
+// 7 · rate vs age
+{
+const pts=fixed.map(f=>({x:2026.45-f.b,y:f.hn,f}));
+new Chart(c7,{type:"scatter",data:{datasets:[{data:pts,pointRadius:5,pointHoverRadius:7,
+ backgroundColor:pts.map(p=>COL[p.f.g])}]},
+ options:{maintainAspectRatio:false,
+ scales:{x:{title:{display:true,text:"vessel age (years)"}},
+  y:{ticks:{callback:v=>"$"+v/1000+"k"},title:{display:true,text:"hire $/day"}}},
+ plugins:{legend:{display:false},
+  tooltip:{callbacks:{label:c=>{const f=c.raw.f;return `${f.v} (${f.b}, ${fmt(f.d)} dwt): $ ${fmt(f.hn)}`;}}}}}});
+}
+</script>
+</body>
+</html>
